@@ -1,0 +1,32 @@
+﻿@page "/login"
+@page "/account/login"
+@using BlazorWebassembyAuthenticationWithCookies.Shared
+@inject NavigationManager Navigation;
+
+<h3>Identificate para entrar al sistema</h3>
+
+<input type="text" @bind=UserLogin.UserName />
+<input type="password" @bind=UserLogin.Password />
+
+<button type="button" class="btn btn-success" @onclick=Entrar>Entrar</button>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <p>@Message</p>
+}
+
+@code {
+    [Inject]
+    public HttpClient ApiClient { get; set; }
+
+    UserLogin UserLogin = new();
+    string Message;
+
+    async void Entrar()
+    {
+        HttpResponseMessage response = await ApiClient.PostAsJsonAsync("account/login", UserLogin);
+        if (response.IsSuccessStatusCode) Navigation.NavigateTo("", true);
+        else Message = "Usuario o contraseña incorrectos";
+
+    }
+}
